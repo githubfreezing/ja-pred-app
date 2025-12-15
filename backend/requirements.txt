@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+sqlalchemy
+pydantic
+pydantic-settings
+alembic
+psycopg2-binary
+pytest
+pytest-asyncio
+pytest-cov
+pytest-dotenv
+httpx
+PyJWT
+python-jose
+passlib[bcrypt]==1.7.4
+email-validator

@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+torch           # or tensorflow, onnxruntime-gpu など
+pydantic
+numpy
+opencv-python   # 画像処理が必要なら
