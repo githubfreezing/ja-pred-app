@@ -38,7 +38,7 @@ const AppHeader: React.FC = () => {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 1 }}>
-        
+
           <Button
             color="inherit"
             disabled={isDisabled}
@@ -49,7 +49,7 @@ const AppHeader: React.FC = () => {
 
           <Button
             color="inherit"
-            display={isDisabled}
+            disabled={isDisabled}
             onClick={() => navigate("/pastdate")}
           >
             過去データ

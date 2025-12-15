@@ -50,7 +50,7 @@ export default function UploadPage({ apiBase }: Props) {
       form.append("file", file);
 
       // 例: FastAPI側が POST /upload で受ける想定
-      const res = await fetch(`${API_BASE}/upload`, {
+      const res = await fetch(`${API_BASE}/api/v1/upload`, {
         method: "POST",
         body: form,
       });
@@ -74,7 +74,6 @@ export default function UploadPage({ apiBase }: Props) {
     <Container maxWidth="sm">
       <Box
         sx={{
-          minHeight: "80vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

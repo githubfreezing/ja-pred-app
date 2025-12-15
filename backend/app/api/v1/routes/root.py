@@ -20,7 +20,7 @@ router = APIRouter(tags=["root"])
 # async def read_root():
 #     return JSONResponse(content={"message": "Hello from FastAPI root!"})
 
-AI_SERVICE_URL = "http://ai_service:8001/ai/pred"  
+AI_SERVICE_URL = "http://ai_service:8001/ai/pred"
 
 @router.get("/", summary="ルート（通信テスト用）")
 async def read_root():

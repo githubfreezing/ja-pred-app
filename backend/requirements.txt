@@ -15,3 +15,5 @@ PyJWT
 python-jose
 passlib[bcrypt]==1.7.4
 email-validator
+pandas
+python-multipart

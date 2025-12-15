@@ -2,9 +2,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1.routes import root as root_router
 from app.api.v1.login import auth as auth_router
 from app.core.config import settings
+
+from app.api.v1.routes import root as root_router
+from app.api.v1.routes import upload as upload_router
+from app.api.v1.routes import pastdata as pastdata_router
 
 app = FastAPI()
 
@@ -26,14 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.get("/")
-# def read_root():
-#     return {"message": "Hello from FastAPI"}
 # ---------------------------------------------
 # root（/api/v1/ 直下のルート）を担当するルーター
 # 主にユーザー一覧や /health などの最低限APIを提供
 # prefix なし＝/api/v1/ の位置にマウントされる
 # ---------------------------------------------
 app.include_router(root_router.router, prefix=settings.api_v1_str)
-
+app.include_router(upload_router.upload, prefix=settings.api_v1_str)
 app.include_router(auth_router.router, prefix=settings.api_v1_str)
+app.include_router(pastdata_router.router, prefix=settings.api_v1_str)
