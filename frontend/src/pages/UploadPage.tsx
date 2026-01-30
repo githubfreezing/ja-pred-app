@@ -1,131 +1,125 @@
 // src/pages/UploadPage.tsx
-import React, { useMemo, useState } from "react";
 import {
   Box,
-  Button,
   Container,
   Stack,
   Typography,
-  Alert,
-  CircularProgress,
+  Grid,
+  Paper,
 } from "@mui/material";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import useFileUpload from "../hooks/useFileUpload";
+import FilePickerButton from "../components/FilePickerButton";
+import AsyncActionButton from "../components/AsyncActionButton";
+import StatusAlert from "../components/StatusAlert";
+import type { ForecastRow } from "../types/forecast";
+import { buildForecastChartData } from "../utils/forecastChart";
+import ForecastLineChart from "../components/ForecastLineChart";
+import ForecastResultTable from "../components/ForecastResultTable";
 
-type Props = {
-  apiBase?: string; // 例: "http://localhost:8000"
-};
-
-export default function UploadPage({ apiBase }: Props) {
-  const API_BASE = useMemo(
-    () => apiBase ?? (import.meta as any).env?.VITE_API_BASE ?? "http://localhost:8000",
-    [apiBase]
-  );
-
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(
-    null
-  );
-
+export default function UploadPage() {
+  const { file, setFile, isUploading, message, upload, forecast } = useFileUpload();
   const fileLabel = file ? file.name : "ファイルを選択してください";
-
-  const onPickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(null);
-    const f = e.target.files?.[0] ?? null;
-    setFile(f);
-  };
-
-  const upload = async () => {
-    if (!file) {
-      setMessage({ type: "error", text: "ファイルを選択してください。" });
-      return;
-    }
-
-    setIsUploading(true);
-    setMessage(null);
-
-    try {
-      const form = new FormData();
-      form.append("file", file);
-
-      // 例: FastAPI側が POST /upload で受ける想定
-      const res = await fetch(`${API_BASE}/api/v1/upload`, {
-        method: "POST",
-        body: form,
-      });
-
-      const text = await res.text();
-      if (!res.ok) {
-        setMessage({ type: "error", text: `アップロードに失敗しました（${res.status}）: ${text}` });
-        return;
-      }
-
-      setMessage({ type: "success", text: "アップロードが完了しました。" });
-      setFile(null);
-    } catch (err) {
-      setMessage({ type: "error", text: `通信エラー: ${String(err)}` });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const rows: ForecastRow[] = Array.isArray(forecast) ? forecast : [];
+  const hasForecast = rows.length > 0;
+  const {
+    horizon: horizonDays,
+    labels: chartLabels,
+    values: chartValues,
+  } = buildForecastChartData(rows);
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+      }}
+    >
+      <Container maxWidth="lg" sx={{py: 3 }}>
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12} md={6}>
+            <Stack spacing={4}>
+              <Paper
+               sx={{ 
+                p: 2, 
+                minWidth: 800, 
+                height: 200, 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                backgroundColor: "#FBF8F6",
+                borderRadius: 5,
+               }}
+              >
+                <Box>
+                  <Stack spacing={2} alignItems="center">
+                    <StatusAlert message={message} />
 
-        <Stack spacing={3} sx={{ width: "100%", alignItems: "center" }}>
-          <Typography variant="h4" fontWeight={700}>
-            アップロード
-          </Typography>
+                    <FilePickerButton
+                      label={fileLabel}
+                      disabled={isUploading}
+                      onPick={setFile}
+                    />
 
-          {message && (
-            <Alert severity={message.type} sx={{ width: "100%" }}>
-              {message.text}
-            </Alert>
-          )}
+                    <AsyncActionButton
+                      loading={isUploading}
+                      disabled={!file}
+                      onClick={upload}
+                      startIcon={<CloudUploadIcon />}
+                    >
+                      アップロード
+                    </AsyncActionButton>
+                  </Stack>
+                </Box>
+              </Paper>
 
-          {/* ファイル選択：input[type=file] を Button でラップ */}
-          <Button
-            component="label"
-            variant="outlined"
-            size="large"
-            startIcon={<UploadFileIcon />}
+              {/* グラフ */}
+              {hasForecast && (
+                <Paper sx={{
+                  p: 2,
+                  minWidth: 800,
+                  height: 300,
+                  backgroundColor: "#FBF8F6",
+                  borderRadius: 5
+                  }}
+                >
+                  <ForecastLineChart
+                    horizon={horizonDays}
+                    labels={chartLabels}
+                    values={chartValues}
+                  />
+                </Paper>
+              )}
+            </Stack>
+          </Grid>
+
+          {/* 表 */}
+          <Grid
+            item
+            xs={12}
+            md={6}
             sx={{
-              width: "100%",
-              justifyContent: "center",
-              py: 1.6,
-              borderWidth: 2,
-            }}
-            disabled={isUploading}
-          >
-            {fileLabel}
-            <input type="file" hidden onChange={onPickFile} />
-          </Button>
-
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={isUploading ? <CircularProgress size={18} /> : <CloudUploadIcon />}
-            onClick={upload}
-            disabled={!file || isUploading}
-            sx={{
-              width: 220,
-              py: 1.2,
-              borderRadius: 2,
+              display: "flex",
+              justifyContent: "flex-end",
             }}
           >
-            アップロード
-          </Button>
-
-        </Stack>
-      </Box>
-    </Container>
+            {hasForecast && (
+              <Box>
+                <Paper sx={{
+                  width: "100%",
+                  p: 2 ,
+                  backgroundColor: "#efe8e0",
+                  borderRadius: 5
+                  }}
+                >
+                  <ForecastResultTable rows={rows} />
+                </Paper>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

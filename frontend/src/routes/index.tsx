@@ -5,9 +5,11 @@ import { useAuth } from "react-oidc-context";
 import Login from "../pages/LoginPage";
 import Upload from "../pages/UploadPage";
 import PastData from "../pages/PastDataPage";
+import Sample from "../pages/SamplePage";
 
 // ✅ 未ログインなら "/" に戻すガード
-function RequireAuth({ children }: { children: JSX.Element }) {
+// function RequireAuth({ children }: { children: JSX.Element }) {
+function RequireAuth({ children }: { children: React.ReactElement }) {
   const auth = useAuth();
   const location = useLocation();
 
@@ -36,15 +38,9 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* <Route path="/" element={homeElement} /> */}
-       <Route
-         path="/"
-         element={
-             <Login />
-         }
-       />
+      <Route path="/" element={homeElement} />
 
-      <Route
+      {/* <Route
         path="/upload"
         element={
           <RequireAuth>
@@ -59,6 +55,28 @@ const AppRoutes = () => {
           <RequireAuth>
             <PastData />
           </RequireAuth>
+        }
+      /> */}
+
+      {/* ログイン機能未実装用URL */}
+      <Route
+        path="/upload"
+        element={
+            <Upload />
+        }
+      />
+      <Route
+        path="/pastdate"
+        element={
+            <PastData />
+        }
+      />
+      {/* //////////////////////////// */}
+
+      <Route
+        path="/sample"
+        element={
+          <Sample />
         }
       />
 

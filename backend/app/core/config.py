@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     # ★ DATABASE_URL を追加（.env から読み込まれる）
     DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/appdb"
+    AI_SERVICE_URL: str
 
     JWT_SECRET_KEY: str = "CHANGE_ME"
     JWT_ALGORITHM: str = "HS256"
