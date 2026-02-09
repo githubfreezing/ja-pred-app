@@ -157,13 +157,6 @@ def main(new_ja_csv_path: str):
     long_zero_min = bundle["long_zero_min"]
     new_cutoff = bundle["new_cutoff"]
 
-    # # 1) 最新データで特徴量を作る（学習と同じ前処理）
-    # daily_all = build_full_daily_series(
-    #     old_path=OLD_PATH,
-    #     r7_paths=FILE_R7,
-    #     new_ja_path=NEW_JA_PATH,
-    #     new_cutoff=new_cutoff
-    # )
     daily_all = make_daily_series_from_new_csv(new_ja_csv_path)
 
     daily_base = detect_ja_holiday_and_offseason(
@@ -247,99 +240,6 @@ def main(new_ja_csv_path: str):
     print(forecast_list)
 
     return forecast_list
-
-    # ########################################################################################
-    # bundle = joblib.load(MODEL_PATH)
-    # models = bundle["models"]
-    # feature_cols = bundle["feature_cols"]
-    # use_weather = bundle["use_weather"]
-
-    # short_zero_max = bundle["short_zero_max"]
-    # long_zero_min = bundle["long_zero_min"]
-
-    # # 1) CSVのみで日次系列を作成（連続日付化もここで実施）
-    # daily_all = make_daily_series_from_new_csv(new_ja_csv_path)
-
-    # # 2) 休業日 & オフシーズン推定
-    # daily_base = detect_ja_holiday_and_offseason(
-    #     daily_full=daily_all,
-    #     short_zero_max=short_zero_max,
-    #     long_zero_min=long_zero_min
-    # )
-
-    # # 3) 気象を使う場合のみ結合
-    # if use_weather:
-    #     weather_daily = load_weather_from_jma_csv(WEATHER_CSV_PATH)
-    #     base_for_feat = merge_ship_and_weather(daily_base, weather_daily)
-    # else:
-    #     base_for_feat = daily_base
-
-    # # 4) 特徴量
-    # feat = add_lag_and_calendar_features(base_for_feat)
-    # feat = add_future_weather_features(feat, max_horizon=14)
-
-    # base_date, X_latest_base = get_latest_feature_row(feat, feature_cols)
-    # print("X_latest_base#####################################")
-    # print(X_latest_base)
-    # X_latest_base.to_csv("X_latest_base.csv", index=True, encoding="utf-8-sig")
-
-    # # 5) OWM予報（1〜7日）
-    # owm_fcst = {}
-    # if use_weather and OWM_API_KEY:
-    #     try:
-    #         owm_fcst = fetch_weather_forecast_from_owm(
-    #             api_key=OWM_API_KEY,
-    #             lat=OWM_LAT,
-    #             lon=OWM_LON,
-    #             max_horizon=7
-    #         )
-    #         print("[predict] OWM forecast:", owm_fcst)
-    #     except Exception as e:
-    #         print("[predict] OWM forecast failed:", e)
-    #         owm_fcst = {}
-
-    # # 6) 推論
-    # rows = []
-    # for h in range(1, 15):
-    #     model_h = models[h]
-    #     X_latest_h = X_latest_base.copy()
-
-    #     col_name = f"temp_avg_h{h}"
-    #     if use_weather and (h in owm_fcst) and (col_name in X_latest_h.columns):
-    #         X_latest_h[col_name] = owm_fcst[h]
-
-    #     pred = float(model_h.predict(X_latest_h)[0])
-    #     target_date = base_date + timedelta(days=h)
-
-    #     m = bundle["metrics"].get(h, {})
-    #     err_p80 = float(m.get("err_p80", 0.0))
-    #     lower_80 = max(0.0, pred - err_p80)
-    #     upper_80 = pred + err_p80
-
-    #     rows.append({
-    #         "base_date": base_date,
-    #         "horizon_days": h,
-    #         "target_date": target_date,
-    #         "forecast_kg": pred,
-    #         "use_weather": use_weather,
-    #         "model": "RandomForest",
-    #         "train_mae_kg": float(m.get("train_mae", 0.0)),
-    #         "train_err_p80_kg": err_p80,
-    #         "lower_80_kg": lower_80,
-    #         "upper_80_kg": upper_80,
-    #         "prob_within_10pct": float(m.get("prob_within_10pct", 0.0)),
-    #         "prob_within_20pct": float(m.get("prob_within_20pct", 0.0)),
-    #         "prob_within_30pct": float(m.get("prob_within_30pct", 0.0)),
-    #     })
-
-    # forecast_df = pd.DataFrame(rows)
-
-    # print("\n=== Forecast ===")
-    # print("base_date:", base_date.date())
-    # print(forecast_df[["horizon_days", "target_date", "forecast_kg"]])
-
-    # pred_result = forecast_df[["horizon_days", "target_date", "forecast_kg"]]
-    # return pred_result
 
 # ★ 既存の関数名 health_check と被っていたので、pred に変更
 @app.post("/ai/pred")
