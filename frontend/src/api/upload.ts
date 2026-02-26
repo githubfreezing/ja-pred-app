@@ -20,7 +20,7 @@ export async function uploadFile(
     body: form,
   });
 
-    // 成功時はJSON、失敗時はテキスト（or JSON）を想定して安全に処理
+  // 成功時はJSON、失敗時はテキスト（or JSON）を想定して安全に処理
   if (res.ok) {
     const data = (await res.json()) as UploadResponse;
     return {
@@ -37,12 +37,3 @@ export async function uploadFile(
     };
   }
 }
-
-//   const text = await res.text();
-
-//   return {
-//     ok: res.ok,
-//     status: res.status,
-//     text,
-//   };
-// }

@@ -10,13 +10,14 @@ class Settings(BaseSettings):
     backend_cors_origins: List[AnyHttpUrl] = []
 
     # ★ DATABASE_URL を追加（.env から読み込まれる）
-    DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/appdb"
+    # DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/appdb"
+    DATABASE_URL: str = "postgresql://postgres:ja-pred-app-Db-Password@ja-pred-app-rds-ins.czu8trax56dw.ap-northeast-1.rds.amazonaws.com:5432/ja_pred_app_db_name"
     AI_SERVICE_URL: str
 
     JWT_SECRET_KEY: str = "CHANGE_ME"
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60
-    
+
     # ★ Pydantic Settings v2 正しい設定
     model_config = SettingsConfigDict(
         env_file=".env",

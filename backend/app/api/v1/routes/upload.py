@@ -16,6 +16,9 @@ from app.core.config import settings
 from decimal import Decimal
 from typing import List, Dict, Any
 
+from decimal import Decimal, ROUND_HALF_UP
+from app.models.models import ShipmentPred
+
 upload = APIRouter(prefix="/upload", tags=["Upload"])
 
 AI_SERVICE_URL = settings.AI_SERVICE_URL
@@ -52,6 +55,41 @@ async def upload_shipment_csv(file: UploadFile = File(...),
     print("forecast_list###########################################################")
     print(type(forecast_list))
     print(forecast_list)
+
+    ############################################################################
+    #20260224
+    ############################################################################
+    # --- ShipmentPred に14日予測を保存 ---
+
+    print("first_forecast_date###########################################################")
+    print(type(first_forecast_date))
+    print(first_forecast_date)
+
+    run_date = first_forecast_date - timedelta(days=1)
+
+    # horizon_days(1..14) の順に pred_series を構築（長さ14を必ず満たす）
+    pred_series = [None] * 14
+    for f in forecast_list:
+        h = int(f["horizon_days"])  # 1..14想定
+        if h < 1 or h > 14:
+            raise HTTPException(status_code=500, detail=f"horizon_days が不正です: {h}")
+
+        # Numeric(10,2) 想定なので Decimal にして小数2桁へ丸め
+        kg = Decimal(str(f["forecast_kg"])).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        pred_series[h - 1] = kg
+
+    if any(v is None for v in pred_series):
+        raise HTTPException(status_code=500, detail="14日分の予測が揃っていません（pred_series の欠損）")
+
+    pred_row = ShipmentPred(
+        run_date=run_date,
+        pred_series=pred_series,
+    )
+    db.add(pred_row)
+    db.commit()
+    db.refresh(pred_row)
+    ############################################################################
+
     # ★ get_pastdata_rows を使用して実績7日分を取得
     pastdata_rows = get_pastdata_rows(db=db, from_date=from_date, to_date=to_date)
     print("pastdata_rows###########################################################")

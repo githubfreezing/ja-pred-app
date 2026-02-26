@@ -1,5 +1,5 @@
 //src/components/ForecastResultTable.tsx
-import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 import type { ForecastRow } from "../types/forecast";
 
 type Props = {
@@ -14,7 +14,8 @@ function formatDateLabel(target_date?: string, idx?: number) {
 
 function formatKgLabel(forecast_kg?: ForecastRow["forecast_kg"]) {
   if (typeof forecast_kg === "number") {
-    return forecast_kg.toLocaleString("ja-JP", { maximumFractionDigits: 1 });
+    // return forecast_kg.toLocaleString("ja-JP", { maximumFractionDigits: 1 });
+    return forecast_kg.toLocaleString("ja-JP", { maximumFractionDigits: 0 });
   }
   return String(forecast_kg ?? "");
 }
@@ -36,7 +37,9 @@ export default function ForecastResultTable({ rows, title = "予測結果" }: Pr
           const dateLabel = formatDateLabel(row?.target_date, idx);
           const kgLabel = formatKgLabel(row?.forecast_kg);
 
-          const isActual = row?.horizon_days === 0;
+          // const isActual = row?.horizon_days === 0;
+          const horizon = (row as any)?.horizon_days ?? (row as any)?.horizonDays ?? (row as any)?.horizon;
+          const isActual = Number(horizon ?? -1) === 0;
 
           return (
             <Box

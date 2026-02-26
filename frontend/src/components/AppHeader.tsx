@@ -44,7 +44,7 @@ const AppHeader: React.FC = () => {
             fontWeight: 600
             }}
           >
-            JA予測アプリ202601
+            JA予測アプリ202602
           </Typography>
 
           <Box sx={{ display: "flex", gap: 1 }}>

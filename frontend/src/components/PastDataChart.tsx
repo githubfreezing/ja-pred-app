@@ -21,7 +21,8 @@ const PastDataChart: React.FC<Props> = ({ data }) => {
           yAxis={[
             {
               label: "kg",
-              valueFormatter: (v) => `${v / 1000}k`,
+              // valueFormatter: (v) => `${v / 1000}k`,
+              valueFormatter: (v: number) => `${v / 1000}k`,
               tickNumber: 6,
             }
           ]}

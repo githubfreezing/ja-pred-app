@@ -42,7 +42,7 @@ BASE_DIR = Path(__file__).resolve().parent        # /app/ai
 PROJECT_ROOT = BASE_DIR.parent
 
 MODEL_PATH = PROJECT_ROOT / "ai_artifacts" / "models" / "models_bundle_without_WR.joblib"
-WEATHER_CSV_PATH = PROJECT_ROOT / "ai_artifacts" / "models" / "data (1).csv"
+# WEATHER_CSV_PATH = PROJECT_ROOT / "ai_artifacts" / "models" / "data (1).csv"
 
 # OpenWeatherMap
 OWM_API_KEY = "bdfd03661d11ced41c19dffd70d79a36"

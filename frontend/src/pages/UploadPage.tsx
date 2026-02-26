@@ -3,7 +3,6 @@ import {
   Box,
   Container,
   Stack,
-  Typography,
   Grid,
   Paper,
 } from "@mui/material";
@@ -38,7 +37,7 @@ export default function UploadPage() {
     >
       <Container maxWidth="lg" sx={{py: 3 }}>
         <Grid container spacing={3} alignItems="stretch">
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={4}>
               <Paper
                sx={{ 
@@ -96,9 +95,7 @@ export default function UploadPage() {
 
           {/* 表 */}
           <Grid
-            item
-            xs={12}
-            md={6}
+            size={{ xs: 12, md: 6 }}
             sx={{
               display: "flex",
               justifyContent: "flex-end",
